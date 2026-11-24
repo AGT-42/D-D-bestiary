@@ -1,0 +1,41 @@
+// Talks to the free D&D 5e SRD API (no key needed) and converts
+// its monsters into the shape our app stores.
+import { TYPES } from "../utils/constants.js";
+
+const BASE = "https://www.dnd5eapi.co/api/2014";
+
+const getJson = async (path) => {
+  const res = await fetch(`${BASE}${path}`);
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+  return res.json();
+};
+
+export const fetchMonsterList = async () => (await getJson("/monsters")).results;
+export const fetchMonster = (index) => getJson(`/monsters/${index}`);
+
+const CR_FRACTIONS = { 0.125: "1/8", 0.25: "1/4", 0.5: "1/2" };
+
+const formatSpeed = (speed = {}) =>
+  Object.entries(speed)
+    .map(([mode, value]) => (mode === "walk" ? value : `${mode} ${value}`))
+    .join(", ") || "30 ft.";
+
+const joinEntries = (list = []) => list.map((e) => `${e.name}. ${e.desc}`).join("\n");
+
+export const toLocalMonster = (api) => ({
+  name: api.name,
+  size: api.size,
+  type: TYPES.find((t) => api.type.toLowerCase().includes(t.toLowerCase())) ?? "Humanoid",
+  cr: CR_FRACTIONS[api.challenge_rating] ?? String(api.challenge_rating),
+  ac: Array.isArray(api.armor_class) ? api.armor_class[0]?.value ?? 10 : api.armor_class ?? 10,
+  hp: api.hit_points,
+  speed: formatSpeed(api.speed),
+  str: api.strength,
+  dex: api.dexterity,
+  con: api.constitution,
+  int: api.intelligence,
+  wis: api.wisdom,
+  cha: api.charisma,
+  description: joinEntries(api.special_abilities),
+  actions: joinEntries(api.actions),
+});

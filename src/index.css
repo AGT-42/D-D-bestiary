@@ -1,0 +1,36 @@
+@import "tailwindcss";
+
+@theme {
+  --color-stone: #e9e5e1;
+  --color-paper: #f6f3f0;
+  --color-ink: #1b1818;
+  --color-blood: #bb3a2f;
+  --color-blood-deep: #a52b24;
+  --color-mute: #6f6864;
+  --color-line: #ddd6cf;
+  --font-display: "Chakra Petch", sans-serif;
+  --font-body: "Montserrat", sans-serif;
+}
+
+/* rem-based sizing: scale the whole UI up on big screens so it fills them */
+html {
+  font-size: clamp(16px, 0.5vw + 11px, 22px);
+}
+
+body {
+  background: var(--color-stone);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+/* Angular, uppercase headings like the reference */
+.font-display {
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-blood);
+  outline-offset: 2px;
+}
